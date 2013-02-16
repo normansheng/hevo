@@ -1,13 +1,17 @@
 package com.hevo.app;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.google.api.services.herevoice.model.Voice;
+import com.hevo.app.VoiceContent.VoiceItem;
 import com.hevo.app.dummy.DummyContent;
 
 /**
@@ -48,6 +52,7 @@ public class VoiceListFragment extends ListFragment {
 		 * Callback for when an item has been selected.
 		 */
 		public void onItemSelected(String id);
+		public void onAttachVoiceListFragment (VoiceListFragment fragment); 
 	}
 
 	/**
@@ -57,6 +62,12 @@ public class VoiceListFragment extends ListFragment {
 	private static Callbacks sDummyCallbacks = new Callbacks() {
 		@Override
 		public void onItemSelected(String id) {
+		}
+
+		@Override
+		public void onAttachVoiceListFragment(VoiceListFragment fragment) {
+			// TODO Auto-generated method stub
+			
 		}
 	};
 
@@ -70,11 +81,6 @@ public class VoiceListFragment extends ListFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        VoiceListActivity vla = (VoiceListActivity)getActivity();
-		// TODO: replace with a real list adapter.
-        
-		setListAdapter(vla.listAdapter);
-		
 	}
 
 	@Override
@@ -94,7 +100,9 @@ public class VoiceListFragment extends ListFragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-
+		Log.d("","onAttach!!");
+		
+		
 		// Activities containing this fragment must implement its callbacks.
 		if (!(activity instanceof Callbacks)) {
 			throw new IllegalStateException(
@@ -102,6 +110,7 @@ public class VoiceListFragment extends ListFragment {
 		}
 
 		mCallbacks = (Callbacks) activity;
+		mCallbacks.onAttachVoiceListFragment(this);
 	}
 
 	@Override
@@ -119,8 +128,8 @@ public class VoiceListFragment extends ListFragment {
 
 		// Notify the active callbacks interface (the activity, if the
 		// fragment is attached to one) that an item has been selected.
-		Log.d("","clicked:" + id);
-		//mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+		VoiceItem v = (VoiceItem)getListView().getAdapter().getItem(position);
+		mCallbacks.onItemSelected(v.id);
 	}
 
 	@Override

@@ -1,9 +1,14 @@
 package com.hevo.app;
 
+import java.util.List;
+
+import com.google.api.services.herevoice.model.Voice;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.MenuItem;
 
 /**
@@ -15,14 +20,13 @@ import android.view.MenuItem;
  * a {@link VoiceDetailFragment}.
  */
 public class VoiceDetailActivity extends FragmentActivity {
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_voice_detail);
 
 		// Show the Up button in the action bar.
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		//getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		// savedInstanceState is non-null when there is fragment state
 		// saved from previous configurations of this activity
@@ -36,9 +40,10 @@ public class VoiceDetailActivity extends FragmentActivity {
 		if (savedInstanceState == null) {
 			// Create the detail fragment and add it to the activity
 			// using a fragment transaction.
+			String id = getIntent().getStringExtra("voiceID");
+			
 			Bundle arguments = new Bundle();
-			arguments.putString(VoiceDetailFragment.ARG_ITEM_ID, getIntent()
-					.getStringExtra(VoiceDetailFragment.ARG_ITEM_ID));
+			arguments.putString("voiceID", id);
 			VoiceDetailFragment fragment = new VoiceDetailFragment();
 			fragment.setArguments(arguments);
 			getSupportFragmentManager().beginTransaction()

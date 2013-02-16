@@ -9,6 +9,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.auth.GoogleAuthUtil;
 
 import android.accounts.Account;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -65,9 +66,12 @@ public class VoiceListActivity extends FragmentActivity implements
 	private EditText sendText;
 	private Button sendButton;
 	private ImageButton refreshButton;
+	private VoiceApplication va;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		va = (VoiceApplication)getApplication();
 		initListAdapter();
 		setContentView(R.layout.activity_voice_list);
 		
@@ -117,6 +121,13 @@ public class VoiceListActivity extends FragmentActivity implements
 		});
 	}
 
+	@Override
+	public void onAttachVoiceListFragment(VoiceListFragment fragment) {
+		// TODO Auto-generated method stub
+		Log.d("","!!!!!!!!!onAttachVoiceListFragment called");
+		fragment.setListAdapter(this.listAdapter);
+	}
+	
 	/**
 	 * Callback method from {@link VoiceListFragment.Callbacks} indicating that
 	 * the item with the given ID was selected.
@@ -137,12 +148,22 @@ public class VoiceListActivity extends FragmentActivity implements
 		} else {
 			// In single-pane mode, simply start the detail activity
 			// for the selected item ID.
-			Log.d("","item clicked:" + id);
-			/*
-			Intent detailIntent = new Intent(this, VoiceDetailActivity.class);
-			detailIntent.putExtra(VoiceDetailFragment.ARG_ITEM_ID, id);
-			startActivity(detailIntent);
-			*/
+			List<Voice> vl = va.getVoiceList();
+			
+	        for(int i=0;i<vl.size();i++){
+				if(vl.get(i).getVoiceID().equals(id)){
+					vl.get(i).getVoiceText();
+					Log.d("","$$:" + vl.get(i).getVoiceText());
+					
+					Intent detailIntent = new Intent(this, VoiceDetailActivity.class);
+					detailIntent.putExtra("voiceID", vl.get(i).getVoiceID());
+					startActivity(detailIntent);
+					
+					
+					break;
+				}
+			}
+			
 		}
 	}
 	
@@ -206,18 +227,20 @@ public class VoiceListActivity extends FragmentActivity implements
 			   System.out.println("count: " + listAdapter.getCount());
 			   listAdapter.notifyDataSetChanged();
 			   */
-		       List<Voice> lv = result.getItems();
-		    		
+			 	
+			   List<Voice> vl = va.setVoiceList(result.getItems());
 			   
 		       List<String> list = new ArrayList<String>(); //parser.parse(new ByteArrayInputStream(result.getBytes("UTF-8")));
-			   if(lv!=null){
+			   if(vl!=null){
 				   listAdapter.clear();
-				   for(int i=0;i<lv.size();i++){
-				   list.add(lv.get(i).getVoiceText());
+				   for(int i=0;i<vl.size();i++){
+				   list.add(vl.get(i).getVoiceText());
 				   //System.out.println(DateUtils.getRelativeTimeSpanString(lv.get(i).getVoiceDate().getValue(),new Date().getTime(),0));
 				   
-				   String dateString = (String) DateUtils.getRelativeTimeSpanString(lv.get(i).getVoiceDate().getValue(),new Date().getTime(),0);
-				   content.addItem(new VoiceItem(lv.get(i).getVoiceID(), lv.get(i).getVoiceText()+ " -" +dateString));
+				   String dateString = (String) DateUtils.getRelativeTimeSpanString(vl.get(i).getVoiceDate().getValue(),
+						   														    new Date().getTime(),0);
+				   content.addItem(new VoiceItem(vl.get(i).getVoiceID(), 
+						   						 vl.get(i).getVoiceText()+ " -" +dateString));
 				   }
 			   
 			   listAdapter.notifyDataSetChanged();
@@ -267,7 +290,8 @@ public class VoiceListActivity extends FragmentActivity implements
 				android.R.layout.simple_list_item_activated_1,
 				android.R.id.text1, content.ITEMS);
 		System.out.println("list inited");
-		
 	}
+
+	
 	
 }
