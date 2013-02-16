@@ -22,6 +22,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -63,6 +64,7 @@ public class VoiceListActivity extends FragmentActivity implements
 	private GoogleAccountCredential credential;
 	private EditText sendText;
 	private Button sendButton;
+	private ImageButton refreshButton;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -102,6 +104,15 @@ public class VoiceListActivity extends FragmentActivity implements
                        InputMethodManager.HIDE_NOT_ALWAYS);
 				}
 				
+			}
+		});
+		
+		refreshButton = (ImageButton) findViewById(R.id.refreshButton);
+		refreshButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				// Create a new HttpClient and Post Header
+				ListVoiceTask lvt = new ListVoiceTask();
+				lvt.execute();
 			}
 		});
 	}

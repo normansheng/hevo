@@ -45,46 +45,13 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true" >
 
-		 <Button
-		     android:id="@+id/button1"
-		     android:layout_width="wrap_content"
-		     android:layout_height="wrap_content"
-		     android:layout_alignParentLeft="true"
-		     android:layout_alignParentTop="true"
-		     android:text="Button" />
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/button1"
-            android:text="Button" />
-
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/voice_list"
-            android:layout_toRightOf="@+id/button2"
-            android:text="Button" />
-
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/button3"
-            android:text="Button" />
-
-        <Button
-            android:id="@+id/button5"
+        <ImageButton
+            android:id="@+id/refreshButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/button4"
-            
-            android:text="R" />
+            android:src="@drawable/navigation_refresh" />
 
         </RelativeLayout>
 
