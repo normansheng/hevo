@@ -21,7 +21,6 @@ public class VoiceAdapter extends ArrayAdapter<Voice> {
 	private List<Voice> mVoicelist;
 	public VoiceAdapter(Context context, int layoutResourceId,List<Voice> objects) {
 		super(context, layoutResourceId, objects);
-		Log.d("","VoiceAdapter construct!");
 		mContext = context;
 		mLayoutResourceId = layoutResourceId;
 		mVoicelist = objects;
@@ -31,8 +30,7 @@ public class VoiceAdapter extends ArrayAdapter<Voice> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
-		Log.d("","VoiceAdapter getView!");
-	    View row = convertView;
+		View row = convertView;
 	    ViewHolder holder = new ViewHolder();
 
 	    if(row == null)

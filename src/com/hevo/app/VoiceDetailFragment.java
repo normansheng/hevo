@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.api.services.herevoice.model.Voice;
-import com.hevo.app.dummy.DummyContent;
+
 
 /**
  * A fragment representing a single voice detail screen. This fragment is either
@@ -50,8 +50,6 @@ public class VoiceDetailFragment extends Fragment {
         	if(vl.get(i).getVoiceID().equals(getArguments().get("voiceID"))){
         		voice = vl.get(i);
 				vl.get(i).getVoiceText();
-				Log.d("","$$:" + vl.get(i).getVoiceText());
-				
 				break;
 			}
 		}

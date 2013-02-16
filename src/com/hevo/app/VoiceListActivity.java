@@ -36,8 +36,6 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.herevoice.*;
 import com.google.api.services.herevoice.model.*;
 import com.hevo.app.VoiceContent.VoiceItem;
-import com.hevo.app.dummy.DummyContent;
-import com.hevo.app.dummy.DummyContent.DummyItem;
 
 
 
@@ -72,7 +70,6 @@ public class VoiceListActivity extends FragmentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d("", "oncreate");
 		va = (VoiceApplication)getApplication();
 		setContentView(R.layout.activity_voice_list);
 		
@@ -133,7 +130,6 @@ public class VoiceListActivity extends FragmentActivity implements
 	@Override
 	public void onVoiceListFragmentCreated(VoiceListFragment fragment) {
 		// TODO Auto-generated method stub
-		Log.d("","onVoiceListFragmentCreated!!!!!");
 		fragment.getListView().setStackFromBottom(true);
 		fragment.getListView().setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 	}
@@ -172,7 +168,6 @@ public class VoiceListActivity extends FragmentActivity implements
 		if(gps.canGetLocation()){
 			Location location = gps.getLocation();
 			ListVoiceTask lvt = new ListVoiceTask();
-			Log.d("","try to call ListVoiceTask");
 			lvt.execute();
 
 		}else{
@@ -208,7 +203,6 @@ public class VoiceListActivity extends FragmentActivity implements
 			Herevoice endpoint = builder.build();
 			
 			try {
-				Log.d("","try to call server api list");
 				return endpoint.list(String.valueOf(location.getLatitude()), 
 						      String.valueOf(location.getLongitude())).execute();
 			} catch (IOException e) {

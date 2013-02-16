@@ -29,7 +29,8 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/sendButton"
-            android:ems="10" />
+            android:ems="10"
+            android:hint="post something here..." />
 
         <Button
             android:id="@+id/sendButton"

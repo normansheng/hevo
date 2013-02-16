@@ -12,7 +12,6 @@ import android.widget.ListView;
 
 import com.google.api.services.herevoice.model.Voice;
 import com.hevo.app.VoiceContent.VoiceItem;
-import com.hevo.app.dummy.DummyContent;
 
 /**
  * A list fragment representing a list of voices. This fragment also supports
@@ -102,9 +101,6 @@ public class VoiceListFragment extends ListFragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		Log.d("","onAttach!!");
-		
-		
 		// Activities containing this fragment must implement its callbacks.
 		if (!(activity instanceof Callbacks)) {
 			throw new IllegalStateException(
