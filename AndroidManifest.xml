@@ -35,7 +35,8 @@
         <activity
             android:name="com.hevo.app.VoiceDetailActivity"
             android:label="@string/title_voice_detail"
-            android:parentActivityName=".voiceListActivity" >
+            android:parentActivityName=".voiceListActivity"
+            android:screenOrientation="portrait"  >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".voiceListActivity" />

@@ -53,6 +53,7 @@ public class VoiceListFragment extends ListFragment {
 		 */
 		public void onItemSelected(String id);
 		public void onAttachVoiceListFragment (VoiceListFragment fragment); 
+		public void onVoiceListFragmentCreated (VoiceListFragment fragment); 
 	}
 
 	/**
@@ -66,8 +67,10 @@ public class VoiceListFragment extends ListFragment {
 
 		@Override
 		public void onAttachVoiceListFragment(VoiceListFragment fragment) {
-			// TODO Auto-generated method stub
-			
+		}
+
+		@Override
+		public void onVoiceListFragmentCreated(VoiceListFragment fragment) {
 		}
 	};
 
@@ -93,8 +96,7 @@ public class VoiceListFragment extends ListFragment {
 			setActivatedPosition(savedInstanceState
 					.getInt(STATE_ACTIVATED_POSITION));
 		}
-		getListView().setStackFromBottom(true);
-		getListView().setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+		mCallbacks.onVoiceListFragmentCreated(this);
 	}
 
 	@Override
@@ -108,7 +110,6 @@ public class VoiceListFragment extends ListFragment {
 			throw new IllegalStateException(
 					"Activity must implement fragment's callbacks.");
 		}
-
 		mCallbacks = (Callbacks) activity;
 		mCallbacks.onAttachVoiceListFragment(this);
 	}

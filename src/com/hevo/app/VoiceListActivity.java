@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -62,7 +63,6 @@ public class VoiceListActivity extends FragmentActivity implements
 	 * device.
 	 */
 	private boolean mTwoPane;
-	private GoogleAccountCredential credential;
 	private EditText sendText;
 	private Button sendButton;
 	private ImageButton refreshButton;
@@ -95,6 +95,7 @@ public class VoiceListActivity extends FragmentActivity implements
 		sendButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				// Create a new HttpClient and Post Header
+				GPSTracker gps = va.getGPSTracker();
 				if(gps.canGetLocation()){
 					Location location = gps.getLocation();
 					Log.d("","Your Location is - \nLat: " + location.getLatitude() + "\nLng: " + location.getLongitude());
@@ -124,8 +125,15 @@ public class VoiceListActivity extends FragmentActivity implements
 	@Override
 	public void onAttachVoiceListFragment(VoiceListFragment fragment) {
 		// TODO Auto-generated method stub
-		Log.d("","!!!!!!!!!onAttachVoiceListFragment called");
 		fragment.setListAdapter(this.listAdapter);
+	}
+	
+	@Override
+	public void onVoiceListFragmentCreated(VoiceListFragment fragment) {
+		// TODO Auto-generated method stub
+		Log.d("","onVoiceListFragmentCreated!!!!!");
+		fragment.getListView().setStackFromBottom(true);
+		fragment.getListView().setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 	}
 	
 	/**
@@ -167,9 +175,9 @@ public class VoiceListActivity extends FragmentActivity implements
 		}
 	}
 	
-	private GPSTracker gps;
 	private void initGPSTracker(){
-		gps = new GPSTracker(VoiceListActivity.this);
+		GPSTracker gps = new GPSTracker(VoiceListActivity.this);
+		gps = va.setGPSTracker(gps);
 		// check if GPS enabled
 		if(gps.canGetLocation()){
 			Location location = gps.getLocation();
@@ -187,8 +195,9 @@ public class VoiceListActivity extends FragmentActivity implements
             GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         System.out.println("google play status " + connectionStatusCode);
        // SharedPreferences settings = getSharedPreferences("herevoice", 0);
-        credential = GoogleAccountCredential.usingAudience(this,
+        GoogleAccountCredential credential = GoogleAccountCredential.usingAudience(this,
         "server:client_id:204072562742-e99p8bekv527gvrm7iqks7qsb2d34ibv.apps.googleusercontent.com");
+        credential = va.setGoogleAccountCredential(credential);
         Account acc = credential.getAllAccounts()[0];
         credential.setSelectedAccountName(acc.name);
         System.out.println("selected account name: " + credential.getSelectedAccountName());
@@ -198,6 +207,7 @@ public class VoiceListActivity extends FragmentActivity implements
 	private class ListVoiceTask extends AsyncTask<Void,VoiceCollection,VoiceCollection> {
 		
 		protected VoiceCollection doInBackground(Void...params) {
+			GPSTracker gps = va.getGPSTracker();
 			Location location = gps.getLocation();
 			Log.d("","Your Location is - \nLat: " + location.getLatitude() + "\nLng: " + location.getLongitude());
 			Herevoice.Builder builder = new Herevoice.Builder(
@@ -252,13 +262,14 @@ public class VoiceListActivity extends FragmentActivity implements
 	private class MakeVoiceTask extends AsyncTask<String, Void, Void> {
 		
 		protected Void doInBackground(String... params) {
+			GPSTracker gps = va.getGPSTracker();
 			Location location = gps.getLocation();
 			Log.d("","Your Location is - \nLat: " + location.getLatitude() + "\nLng: " + location.getLongitude());
 			
 			Herevoice.Builder builder = new Herevoice.Builder(
 					AndroidHttp.newCompatibleTransport(),
 					new JacksonFactory(),
-					credential);
+					va.getGoogleAccountCredential());
 			Herevoice endpoint = builder.build();
 			
 			try {
@@ -291,6 +302,8 @@ public class VoiceListActivity extends FragmentActivity implements
 				android.R.id.text1, content.ITEMS);
 		System.out.println("list inited");
 	}
+
+	
 
 	
 	

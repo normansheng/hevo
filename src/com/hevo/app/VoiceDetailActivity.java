@@ -1,15 +1,34 @@
 package com.hevo.app;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.herevoice.Herevoice;
 import com.google.api.services.herevoice.model.Voice;
+import com.hevo.app.VoiceContent.VoiceItem;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.TextView;
 
 /**
  * An activity representing a single voice detail screen. This activity is only
@@ -19,12 +38,42 @@ import android.view.MenuItem;
  * This activity is mostly just a 'shell' activity containing nothing more than
  * a {@link VoiceDetailFragment}.
  */
-public class VoiceDetailActivity extends FragmentActivity {
+public class VoiceDetailActivity extends FragmentActivity implements
+	VoiceListFragment.Callbacks{
+	private EditText sendText;
+	private Button sendButton;
+	private TextView voiceText;
+	private VoiceApplication va;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		va = (VoiceApplication)getApplication();
+		initListAdapter();
 		setContentView(R.layout.activity_voice_detail);
-
+		voiceText = (TextView) findViewById(R.id.voiceText);
+		
+		sendText = (EditText)findViewById(R.id.sendText);
+		sendButton = (Button) findViewById(R.id.sendButton);
+		sendButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				// Create a new HttpClient and Post Header
+				GPSTracker gps = va.getGPSTracker();
+				if(gps.canGetLocation()){
+					Location location = gps.getLocation();
+					Log.d("","Your Location is - \nLat: " + location.getLatitude() + "\nLng: " + location.getLongitude());
+					MakeCommentTask makecomment = new MakeCommentTask();
+					makecomment.execute(getIntent().getStringExtra("voiceID"),
+									    sendText.getText().toString());
+					sendText.getText().clear();
+					
+					InputMethodManager inputManager = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE); 
+					inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                       InputMethodManager.HIDE_NOT_ALWAYS);
+				}
+				
+			}
+		});
 		// Show the Up button in the action bar.
 		//getActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -41,16 +90,27 @@ public class VoiceDetailActivity extends FragmentActivity {
 			// Create the detail fragment and add it to the activity
 			// using a fragment transaction.
 			String id = getIntent().getStringExtra("voiceID");
-			
+			List<Voice> vl = va.getVoiceList();
+		    for(int i=0;i<vl.size();i++){
+	        	if(vl.get(i).getVoiceID().equals(id)){
+	        		String dateString = (String) DateUtils.getRelativeTimeSpanString(vl.get(i).getVoiceDate().getValue(),
+							    		 											 new Date().getTime(),0);
+	        		voiceText.setText(vl.get(i).getVoiceText() + " -" + dateString);
+	        		listComments(vl.get(i).getComments());
+					break;
+				}
+			}
+			/*
 			Bundle arguments = new Bundle();
 			arguments.putString("voiceID", id);
 			VoiceDetailFragment fragment = new VoiceDetailFragment();
 			fragment.setArguments(arguments);
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.voice_detail_container, fragment).commit();
+					*/
 		}
 	}
-
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -67,5 +127,80 @@ public class VoiceDetailActivity extends FragmentActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onItemSelected(String id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAttachVoiceListFragment(VoiceListFragment fragment) {
+		// TODO Auto-generated method stub
+		fragment.setListAdapter(this.listAdapter);
+	}
+	
+	@Override
+	public void onVoiceListFragmentCreated(VoiceListFragment fragment) {
+		// TODO Auto-generated method stub
+		fragment.getListView().setStackFromBottom(false);
+		fragment.getListView().setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+	}
+	public ArrayAdapter<VoiceContent.VoiceItem> listAdapter;
+	public VoiceContent content = new VoiceContent();
+	public List<Voice> voicelist = new ArrayList<Voice>();
+	private void initListAdapter(){
+		/*listAdapter = new VoiceAdapter(this,android.R.layout.simple_list_item_activated_1,voicelist);
+		*/
+		listAdapter = new ArrayAdapter<VoiceContent.VoiceItem>(this,
+				android.R.layout.simple_list_item_activated_1,
+				android.R.id.text1, content.ITEMS);
+	}
+	
+	private void listComments(List<Voice> vl){
+	    List<String> list = new ArrayList<String>(); //parser.parse(new ByteArrayInputStream(result.getBytes("UTF-8")));
+	   if(vl!=null){
+		   listAdapter.clear();
+			   for(int i=0;i<vl.size();i++){
+			   list.add(vl.get(i).getVoiceText());
+			   //System.out.println(DateUtils.getRelativeTimeSpanString(lv.get(i).getVoiceDate().getValue(),new Date().getTime(),0));
+			   
+			   String dateString = (String) DateUtils.getRelativeTimeSpanString(vl.get(i).getVoiceDate().getValue(),
+					   														    new Date().getTime(),0);
+			   content.addItem(new VoiceItem(vl.get(i).getVoiceID(), 
+					   						 vl.get(i).getVoiceText()+ " -" +dateString));
+			   }
+		   
+		   listAdapter.notifyDataSetChanged();
+		   }
+	}
+
+	
+private class MakeCommentTask extends AsyncTask<String, Void, Void> {
+		
+		protected Void doInBackground(String... params) {
+			
+			Herevoice.Builder builder = new Herevoice.Builder(
+					AndroidHttp.newCompatibleTransport(),
+					new JacksonFactory(),
+					va.getGoogleAccountCredential());
+			Herevoice endpoint = builder.build();
+			
+			try {
+				endpoint.comment(params[0], 
+								 params[1],
+								 String.valueOf(va.getGPSTracker().getLatitude()),
+								 String.valueOf(va.getGPSTracker().getLongitude())).execute();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
+		protected void onPostExecute(Void result) {
+			Log.d("","posted");
+		}
+
 	}
 }
