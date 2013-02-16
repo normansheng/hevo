@@ -48,7 +48,6 @@ public class VoiceDetailActivity extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		va = (VoiceApplication)getApplication();
-		initListAdapter();
 		setContentView(R.layout.activity_voice_detail);
 		voiceText = (TextView) findViewById(R.id.voiceText);
 		
@@ -131,49 +130,29 @@ public class VoiceDetailActivity extends FragmentActivity implements
 
 	@Override
 	public void onItemSelected(String id) {
-		// TODO Auto-generated method stub
 		
 	}
 
+	public VoiceAdapter listAdapter;
+	public List<Voice> voicelist = new ArrayList<Voice>();
 	@Override
 	public void onAttachVoiceListFragment(VoiceListFragment fragment) {
-		// TODO Auto-generated method stub
+		this.listAdapter = new VoiceAdapter(this,R.layout.voice_item ,voicelist);
 		fragment.setListAdapter(this.listAdapter);
 	}
 	
 	@Override
 	public void onVoiceListFragmentCreated(VoiceListFragment fragment) {
-		// TODO Auto-generated method stub
 		fragment.getListView().setStackFromBottom(false);
 		fragment.getListView().setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 	}
-	public ArrayAdapter<VoiceContent.VoiceItem> listAdapter;
-	public VoiceContent content = new VoiceContent();
-	public List<Voice> voicelist = new ArrayList<Voice>();
-	private void initListAdapter(){
-		/*listAdapter = new VoiceAdapter(this,android.R.layout.simple_list_item_activated_1,voicelist);
-		*/
-		listAdapter = new ArrayAdapter<VoiceContent.VoiceItem>(this,
-				android.R.layout.simple_list_item_activated_1,
-				android.R.id.text1, content.ITEMS);
-	}
 	
 	private void listComments(List<Voice> vl){
-	    List<String> list = new ArrayList<String>(); //parser.parse(new ByteArrayInputStream(result.getBytes("UTF-8")));
-	   if(vl!=null){
-		   listAdapter.clear();
-			   for(int i=0;i<vl.size();i++){
-			   list.add(vl.get(i).getVoiceText());
-			   //System.out.println(DateUtils.getRelativeTimeSpanString(lv.get(i).getVoiceDate().getValue(),new Date().getTime(),0));
-			   
-			   String dateString = (String) DateUtils.getRelativeTimeSpanString(vl.get(i).getVoiceDate().getValue(),
-					   														    new Date().getTime(),0);
-			   content.addItem(new VoiceItem(vl.get(i).getVoiceID(), 
-					   						 vl.get(i).getVoiceText()+ " -" +dateString));
-			   }
-		   
-		   listAdapter.notifyDataSetChanged();
-		   }
+		voicelist.clear();
+		if(vl!=null){
+		voicelist.addAll(vl);
+		listAdapter.notifyDataSetChanged();
+		}
 	}
 
 	

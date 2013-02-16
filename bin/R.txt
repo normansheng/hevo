@@ -34,7 +34,7 @@ int layout activity_voice_detail 0x7f030000
 int layout activity_voice_list 0x7f030001
 int layout activity_voice_twopane 0x7f030002
 int layout fragment_voice_detail 0x7f030003
-int layout voiceitem 0x7f030004
+int layout voice_item 0x7f030004
 int string app_name 0x7f05000b
 int string common_google_play_services_enable_button 0x7f050006
 int string common_google_play_services_enable_text 0x7f050005

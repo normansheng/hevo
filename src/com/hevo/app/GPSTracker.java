@@ -94,6 +94,10 @@ public class GPSTracker extends Service implements LocationListener {
                         }
                     }
                 }
+                Log.d("","Your Location is - \nLat: " + location.getLatitude() 
+                		                  + "\nLng: " + location.getLongitude()
+                		                  + "\nAcc: " + location.getAccuracy()
+                		                  );
             }
  
         } catch (Exception e) {

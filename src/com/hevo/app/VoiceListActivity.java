@@ -32,6 +32,7 @@ import com.google.api.client.googleapis.services.json.AbstractGoogleJsonClient.B
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
 import com.google.api.services.herevoice.*;
 import com.google.api.services.herevoice.model.*;
 import com.hevo.app.VoiceContent.VoiceItem;
@@ -71,8 +72,8 @@ public class VoiceListActivity extends FragmentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d("", "oncreate");
 		va = (VoiceApplication)getApplication();
-		initListAdapter();
 		setContentView(R.layout.activity_voice_list);
 		
 		login();
@@ -97,8 +98,6 @@ public class VoiceListActivity extends FragmentActivity implements
 				// Create a new HttpClient and Post Header
 				GPSTracker gps = va.getGPSTracker();
 				if(gps.canGetLocation()){
-					Location location = gps.getLocation();
-					Log.d("","Your Location is - \nLat: " + location.getLatitude() + "\nLng: " + location.getLongitude());
 					MakeVoiceTask makevoice = new MakeVoiceTask();
 					makevoice.execute(sendText.getText().toString());
 					sendText.getText().clear();
@@ -122,9 +121,12 @@ public class VoiceListActivity extends FragmentActivity implements
 		});
 	}
 
+	public VoiceAdapter listAdapter; 
 	@Override
 	public void onAttachVoiceListFragment(VoiceListFragment fragment) {
 		// TODO Auto-generated method stub
+		va.setVoiceList(new ArrayList<Voice>());
+		this.listAdapter = new VoiceAdapter(this,R.layout.voice_item ,va.getVoiceList());
 		fragment.setListAdapter(this.listAdapter);
 	}
 	
@@ -156,22 +158,10 @@ public class VoiceListActivity extends FragmentActivity implements
 		} else {
 			// In single-pane mode, simply start the detail activity
 			// for the selected item ID.
-			List<Voice> vl = va.getVoiceList();
-			
-	        for(int i=0;i<vl.size();i++){
-				if(vl.get(i).getVoiceID().equals(id)){
-					vl.get(i).getVoiceText();
-					Log.d("","$$:" + vl.get(i).getVoiceText());
-					
-					Intent detailIntent = new Intent(this, VoiceDetailActivity.class);
-					detailIntent.putExtra("voiceID", vl.get(i).getVoiceID());
-					startActivity(detailIntent);
-					
-					
-					break;
-				}
-			}
-			
+			//Log.d("","voiceid:" + id);
+			Intent detailIntent = new Intent(this, VoiceDetailActivity.class);
+			detailIntent.putExtra("voiceID", id);
+			startActivity(detailIntent);
 		}
 	}
 	
@@ -181,8 +171,8 @@ public class VoiceListActivity extends FragmentActivity implements
 		// check if GPS enabled
 		if(gps.canGetLocation()){
 			Location location = gps.getLocation();
-			System.out.println("lat:" + location.getLatitude() + ",lng:" + location.getLongitude());
 			ListVoiceTask lvt = new ListVoiceTask();
+			Log.d("","try to call ListVoiceTask");
 			lvt.execute();
 
 		}else{
@@ -209,7 +199,6 @@ public class VoiceListActivity extends FragmentActivity implements
 		protected VoiceCollection doInBackground(Void...params) {
 			GPSTracker gps = va.getGPSTracker();
 			Location location = gps.getLocation();
-			Log.d("","Your Location is - \nLat: " + location.getLatitude() + "\nLng: " + location.getLongitude());
 			Herevoice.Builder builder = new Herevoice.Builder(
 					AndroidHttp.newCompatibleTransport(),
 					new JacksonFactory(),
@@ -219,6 +208,7 @@ public class VoiceListActivity extends FragmentActivity implements
 			Herevoice endpoint = builder.build();
 			
 			try {
+				Log.d("","try to call server api list");
 				return endpoint.list(String.valueOf(location.getLatitude()), 
 						      String.valueOf(location.getLongitude())).execute();
 			} catch (IOException e) {
@@ -229,32 +219,11 @@ public class VoiceListActivity extends FragmentActivity implements
 		}
 		
 		 @Override
-		    protected void onPostExecute(VoiceCollection result) {
-			 /*  
-			 System.out.println("result returned!");
-			   //voicelist = result.getItems();
-			   listAdapter = new VoiceAdapter(VoiceListActivity.this,android.R.layout.simple_list_item_activated_1,voicelist);
-			   System.out.println("count: " + listAdapter.getCount());
-			   listAdapter.notifyDataSetChanged();
-			   */
-			 	
-			   List<Voice> vl = va.setVoiceList(result.getItems());
-			   
-		       List<String> list = new ArrayList<String>(); //parser.parse(new ByteArrayInputStream(result.getBytes("UTF-8")));
-			   if(vl!=null){
-				   listAdapter.clear();
-				   for(int i=0;i<vl.size();i++){
-				   list.add(vl.get(i).getVoiceText());
-				   //System.out.println(DateUtils.getRelativeTimeSpanString(lv.get(i).getVoiceDate().getValue(),new Date().getTime(),0));
-				   
-				   String dateString = (String) DateUtils.getRelativeTimeSpanString(vl.get(i).getVoiceDate().getValue(),
-						   														    new Date().getTime(),0);
-				   content.addItem(new VoiceItem(vl.get(i).getVoiceID(), 
-						   						 vl.get(i).getVoiceText()+ " -" +dateString));
-				   }
-			   
-			   listAdapter.notifyDataSetChanged();
-			   }
+		   protected void onPostExecute(VoiceCollection result) {
+			 //System.out.println("result returned!");
+			 va.getVoiceList().clear();
+			 va.getVoiceList().addAll(result.getItems());
+			 listAdapter.notifyDataSetChanged();
 		 }
 		 
 	}
@@ -264,7 +233,6 @@ public class VoiceListActivity extends FragmentActivity implements
 		protected Void doInBackground(String... params) {
 			GPSTracker gps = va.getGPSTracker();
 			Location location = gps.getLocation();
-			Log.d("","Your Location is - \nLat: " + location.getLatitude() + "\nLng: " + location.getLongitude());
 			
 			Herevoice.Builder builder = new Herevoice.Builder(
 					AndroidHttp.newCompatibleTransport(),
@@ -290,18 +258,7 @@ public class VoiceListActivity extends FragmentActivity implements
 
 	}
 	
-    public ArrayAdapter<VoiceContent.VoiceItem> listAdapter;
-	//public VoiceAdapter listAdapter; 
-	public VoiceContent content = new VoiceContent();
-	public List<Voice> voicelist = new ArrayList<Voice>();
-	private void initListAdapter(){
-		/*listAdapter = new VoiceAdapter(this,android.R.layout.simple_list_item_activated_1,voicelist);
-		*/
-		listAdapter = new ArrayAdapter<VoiceContent.VoiceItem>(this,
-				android.R.layout.simple_list_item_activated_1,
-				android.R.id.text1, content.ITEMS);
-		System.out.println("list inited");
-	}
+    
 
 	
 

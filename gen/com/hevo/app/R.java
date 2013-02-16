@@ -169,7 +169,7 @@ containing a value of this type.
         public static final int activity_voice_list=0x7f030001;
         public static final int activity_voice_twopane=0x7f030002;
         public static final int fragment_voice_detail=0x7f030003;
-        public static final int voiceitem=0x7f030004;
+        public static final int voice_item=0x7f030004;
     }
     public static final class string {
         public static final int app_name=0x7f05000b;

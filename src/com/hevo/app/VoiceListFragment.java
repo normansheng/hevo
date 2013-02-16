@@ -126,11 +126,8 @@ public class VoiceListFragment extends ListFragment {
 	public void onListItemClick(ListView listView, View view, int position,
 			long id) {
 		super.onListItemClick(listView, view, position, id);
-
-		// Notify the active callbacks interface (the activity, if the
-		// fragment is attached to one) that an item has been selected.
-		VoiceItem v = (VoiceItem)getListView().getAdapter().getItem(position);
-		mCallbacks.onItemSelected(v.id);
+		Voice v = (Voice)getListView().getAdapter().getItem(position);
+		mCallbacks.onItemSelected(v.getVoiceID());
 	}
 
 	@Override
