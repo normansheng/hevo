@@ -12,7 +12,7 @@
 /*
  * This file was generated.
  *  with google-apis-code-generator 1.2.0 (build: 2013-02-14 15:45:00 UTC)
- *  on 2013-02-15 at 05:55:14 UTC 
+ *  on 2013-02-16 at 23:48:29 UTC 
  */
 
 package com.google.api.services.herevoice;
@@ -614,6 +614,165 @@ public class Herevoice extends AbstractGoogleJsonClient {
     }
 
     public Make setLng(java.lang.String lng) {
+      this.lng = lng;
+      return this;
+    }
+
+  }
+
+  /**
+   * Create a request for the method "make2".
+   *
+   * This request holds the parameters needed by the the herevoice server.  After setting any optional
+   * parameters, call the {@link Make2#execute()} method to invoke the remote operation.
+   *
+   * @param parentID
+   * @param localID
+   * @param text
+   * @param lat
+   * @param lng
+   * @return the request
+   */
+  public Make2 make2(java.lang.String parentID, java.lang.String localID, java.lang.String text, java.lang.String lat, java.lang.String lng) throws java.io.IOException {
+    Make2 result = new Make2(parentID, localID, text, lat, lng);
+    initialize(result);
+    return result;
+  }
+
+  public class Make2 extends HerevoiceRequest<com.google.api.services.herevoice.model.Voice> {
+
+    private static final String REST_PATH = "make2/{parentID}/{localID}/{text}/{lat}/{lng}";
+
+    /**
+     * Create a request for the method "make2".
+     *
+     * This request holds the parameters needed by the the herevoice server.  After setting any
+     * optional parameters, call the {@link Make2#execute()} method to invoke the remote operation.
+     * <p> {@link Make2#initialize(AbstractGoogleClientRequest)} must be called to initialize this
+     * instance immediately after invoking the constructor. </p>
+     *
+     * @param parentID
+     * @param localID
+     * @param text
+     * @param lat
+     * @param lng
+     * @since 1.13
+     */
+    protected Make2(java.lang.String parentID, java.lang.String localID, java.lang.String text, java.lang.String lat, java.lang.String lng) {
+      super(Herevoice.this, "POST", REST_PATH, null, com.google.api.services.herevoice.model.Voice.class);
+      this.parentID = Preconditions.checkNotNull(parentID, "Required parameter parentID must be specified.");
+      this.localID = Preconditions.checkNotNull(localID, "Required parameter localID must be specified.");
+      this.text = Preconditions.checkNotNull(text, "Required parameter text must be specified.");
+      this.lat = Preconditions.checkNotNull(lat, "Required parameter lat must be specified.");
+      this.lng = Preconditions.checkNotNull(lng, "Required parameter lng must be specified.");
+    }
+
+    @Override
+    public Make2 setAlt(java.lang.String alt) {
+      return (Make2) super.setAlt(alt);
+    }
+
+    @Override
+    public Make2 setFields(java.lang.String fields) {
+      return (Make2) super.setFields(fields);
+    }
+
+    @Override
+    public Make2 setKey(java.lang.String key) {
+      return (Make2) super.setKey(key);
+    }
+
+    @Override
+    public Make2 setOauthToken(java.lang.String oauthToken) {
+      return (Make2) super.setOauthToken(oauthToken);
+    }
+
+    @Override
+    public Make2 setPrettyPrint(java.lang.Boolean prettyPrint) {
+      return (Make2) super.setPrettyPrint(prettyPrint);
+    }
+
+    @Override
+    public Make2 setQuotaUser(java.lang.String quotaUser) {
+      return (Make2) super.setQuotaUser(quotaUser);
+    }
+
+    @Override
+    public Make2 setUserIp(java.lang.String userIp) {
+      return (Make2) super.setUserIp(userIp);
+    }
+
+    @com.google.api.client.util.Key
+    private java.lang.String parentID;
+
+    /**
+
+     */
+    public java.lang.String getParentID() {
+      return parentID;
+    }
+
+    public Make2 setParentID(java.lang.String parentID) {
+      this.parentID = parentID;
+      return this;
+    }
+
+    @com.google.api.client.util.Key
+    private java.lang.String localID;
+
+    /**
+
+     */
+    public java.lang.String getLocalID() {
+      return localID;
+    }
+
+    public Make2 setLocalID(java.lang.String localID) {
+      this.localID = localID;
+      return this;
+    }
+
+    @com.google.api.client.util.Key
+    private java.lang.String text;
+
+    /**
+
+     */
+    public java.lang.String getText() {
+      return text;
+    }
+
+    public Make2 setText(java.lang.String text) {
+      this.text = text;
+      return this;
+    }
+
+    @com.google.api.client.util.Key
+    private java.lang.String lat;
+
+    /**
+
+     */
+    public java.lang.String getLat() {
+      return lat;
+    }
+
+    public Make2 setLat(java.lang.String lat) {
+      this.lat = lat;
+      return this;
+    }
+
+    @com.google.api.client.util.Key
+    private java.lang.String lng;
+
+    /**
+
+     */
+    public java.lang.String getLng() {
+      return lng;
+    }
+
+    public Make2 setLng(java.lang.String lng) {
       this.lng = lng;
       return this;
     }

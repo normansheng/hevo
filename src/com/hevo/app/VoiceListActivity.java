@@ -12,6 +12,8 @@ import android.accounts.Account;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,6 +27,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -66,11 +69,13 @@ public class VoiceListActivity extends FragmentActivity implements
 	private Button sendButton;
 	private ImageButton refreshButton;
 	private VoiceApplication va;
-	
+	private TextView addressText;
+	private Geocoder geocoder;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		va = (VoiceApplication)getApplication();
+		geocoder = new Geocoder(this);
 		setContentView(R.layout.activity_voice_list);
 		
 		login();
@@ -89,6 +94,7 @@ public class VoiceListActivity extends FragmentActivity implements
 					R.id.voice_list)).setActivateOnItemClick(true);
 		}
 		sendText = (EditText) findViewById(R.id.sendText);
+		addressText = (TextView)findViewById(R.id.addressText);
 		sendButton = (Button) findViewById(R.id.sendButton);
 		sendButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -215,9 +221,24 @@ public class VoiceListActivity extends FragmentActivity implements
 		 @Override
 		   protected void onPostExecute(VoiceCollection result) {
 			 //System.out.println("result returned!");
+			 GPSTracker gps = va.getGPSTracker();
+			 Location location = gps.getLocation();
+				
 			 va.getVoiceList().clear();
 			 va.getVoiceList().addAll(result.getItems());
 			 listAdapter.notifyDataSetChanged();
+			 
+			 try {
+				List<Address> addr = geocoder.getFromLocation(location.getLatitude(), 
+						 				  location.getLongitude(),1);
+				if(addr.size()>0){
+					addressText.setText("message around " + addr.get(0).getAddressLine(0));
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			 
 		 }
 		 
 	}

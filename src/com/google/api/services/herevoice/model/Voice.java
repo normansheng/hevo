@@ -51,6 +51,12 @@ public final class Voice extends GenericJson {
    * The value may be {@code null}.
    */
   @com.google.api.client.util.Key
+  private java.lang.String localID;
+
+  /**
+   * The value may be {@code null}.
+   */
+  @com.google.api.client.util.Key
   private com.google.api.client.util.DateTime voiceDate;
 
   /**
@@ -79,6 +85,23 @@ public final class Voice extends GenericJson {
    */
   public Voice setComments(java.util.List<Voice> comments) {
     this.comments = comments;
+    return this;
+  }
+
+  /**
+
+   * The value returned may be {@code null}.
+   */
+  public java.lang.String getLocalID() {
+    return localID;
+  }
+
+  /**
+
+   * The value set may be {@code null}.
+   */
+  public Voice setLocalID(java.lang.String localID) {
+    this.localID = localID;
     return this;
   }
 

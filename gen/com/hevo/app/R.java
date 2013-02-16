@@ -132,8 +132,9 @@ containing a value of this type.
         public static final int navigation_refresh=0x7f020001;
     }
     public static final class id {
+        public static final int addressText=0x7f04000c;
         public static final int comment_list=0x7f040006;
-        public static final int editText1=0x7f04000d;
+        public static final int editText1=0x7f04000e;
         public static final int none=0x7f040000;
         public static final int normal=0x7f040001;
         public static final int refreshButton=0x7f04000b;
@@ -142,10 +143,10 @@ containing a value of this type.
         public static final int sendButton=0x7f040008;
         public static final int sendText=0x7f040007;
         public static final int terrain=0x7f040003;
-        public static final int textView1=0x7f04000e;
-        public static final int voiceDate=0x7f04000f;
+        public static final int textView1=0x7f04000f;
+        public static final int voiceDate=0x7f040010;
         public static final int voiceText=0x7f040005;
-        public static final int voice_detail=0x7f04000c;
+        public static final int voice_detail=0x7f04000d;
         public static final int voice_detail_container=0x7f040004;
         public static final int voice_list=0x7f040009;
     }
