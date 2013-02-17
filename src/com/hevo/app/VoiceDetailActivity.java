@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -44,6 +45,9 @@ public class VoiceDetailActivity extends FragmentActivity implements
 	private Button sendButton;
 	private TextView voiceText;
 	private VoiceApplication va;
+	public VoiceAdapter listAdapter;
+	public List<Voice> commentlist = new ArrayList<Voice>();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -106,7 +110,7 @@ public class VoiceDetailActivity extends FragmentActivity implements
 			fragment.setArguments(arguments);
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.voice_detail_container, fragment).commit();
-					*/
+			*/
 		}
 	}
 	
@@ -133,11 +137,9 @@ public class VoiceDetailActivity extends FragmentActivity implements
 		
 	}
 
-	public VoiceAdapter listAdapter;
-	public List<Voice> voicelist = new ArrayList<Voice>();
 	@Override
 	public void onAttachVoiceListFragment(VoiceListFragment fragment) {
-		this.listAdapter = new VoiceAdapter(this,R.layout.voice_item ,voicelist);
+		this.listAdapter = new VoiceAdapter(this,R.layout.voice_item ,commentlist);
 		fragment.setListAdapter(this.listAdapter);
 	}
 	
@@ -148,37 +150,53 @@ public class VoiceDetailActivity extends FragmentActivity implements
 	}
 	
 	private void listComments(List<Voice> vl){
-		voicelist.clear();
+		commentlist.clear();
 		if(vl!=null){
-		voicelist.addAll(vl);
-		listAdapter.notifyDataSetChanged();
+			commentlist.addAll(vl);
+			listAdapter.notifyDataSetChanged();
 		}
 	}
 
 	
-private class MakeCommentTask extends AsyncTask<String, Void, Void> {
+private class MakeCommentTask extends AsyncTask<String, Void, Voice> {
 		
-		protected Void doInBackground(String... params) {
+		protected Voice doInBackground(String... params) {
 			
 			Herevoice.Builder builder = new Herevoice.Builder(
 					AndroidHttp.newCompatibleTransport(),
 					new JacksonFactory(),
 					va.getGoogleAccountCredential());
-			Herevoice endpoint = builder.build();
 			
+			Herevoice endpoint = builder.build();
+			UUID uuid = UUID.randomUUID();
+	        String localID = uuid.toString();
 			try {
-				endpoint.comment(params[0], 
-								 params[1],
-								 String.valueOf(va.getGPSTracker().getLatitude()),
-								 String.valueOf(va.getGPSTracker().getLongitude())).execute();
+				Voice v = endpoint.make2(params[0], //parentID
+							  localID,    //localID
+							  params[1],  //text
+							  String.valueOf(va.getGPSTracker().getLatitude()), //lat
+							  String.valueOf(va.getGPSTracker().getLongitude())).execute();//lng
+				return v;
 			} catch (IOException e) {
 				e.printStackTrace();
+				return null;
 			}
-			return null;
 		}
 		
-		protected void onPostExecute(Void result) {
-			Log.d("","posted");
+		protected void onPostExecute(Voice v) {
+			String id = getIntent().getStringExtra("voiceID");
+			List<Voice> vl = va.getVoiceList();
+		    for(int i=0;i<vl.size();i++){
+		    	Voice pv = vl.get(i);
+	        	if(pv.getVoiceID().equals(id)){
+	        		if(pv.getComments()==null){
+	        			pv.setComments(new ArrayList<Voice>());
+	        		}
+	        		vl.get(i).getComments().add(0, v);
+	        		listComments(vl.get(i).getComments());
+					break;
+				}
+			}
 		}
 
 	}

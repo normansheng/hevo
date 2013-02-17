@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.auth.GoogleAuthUtil;
@@ -102,7 +103,7 @@ public class VoiceListActivity extends FragmentActivity implements
 				GPSTracker gps = va.getGPSTracker();
 				if(gps.canGetLocation()){
 					MakeVoiceTask makevoice = new MakeVoiceTask();
-					makevoice.execute(sendText.getText().toString());
+					makevoice.execute("0",sendText.getText().toString());
 					sendText.getText().clear();
 					
 					InputMethodManager inputManager = (InputMethodManager)
@@ -110,7 +111,6 @@ public class VoiceListActivity extends FragmentActivity implements
 					inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                        InputMethodManager.HIDE_NOT_ALWAYS);
 				}
-				
 			}
 		});
 		
@@ -243,9 +243,9 @@ public class VoiceListActivity extends FragmentActivity implements
 		 
 	}
 	
-	private class MakeVoiceTask extends AsyncTask<String, Void, Void> {
+	private class MakeVoiceTask extends AsyncTask<String, Void, Voice> {
 		
-		protected Void doInBackground(String... params) {
+		protected Voice doInBackground(String... params) {
 			GPSTracker gps = va.getGPSTracker();
 			Location location = gps.getLocation();
 			
@@ -254,21 +254,26 @@ public class VoiceListActivity extends FragmentActivity implements
 					new JacksonFactory(),
 					va.getGoogleAccountCredential());
 			Herevoice endpoint = builder.build();
-			
+			UUID uuid = UUID.randomUUID();
+	        String localID = uuid.toString();
 			try {
-				endpoint.make(params[0],
-						      String.valueOf(location.getLatitude()), 
-						      String.valueOf(location.getLongitude())).execute();
+				Voice v = endpoint.make2(params[0], //parentID
+							  localID,    //localID
+							  params[1],  //text
+						      String.valueOf(location.getLatitude()),  //lat
+						      String.valueOf(location.getLongitude())).execute(); //lng;
+				return v;
 			} catch (IOException e) {
 				e.printStackTrace();
+				return null;
 			}
-			return null;
+			
 		}
 		
-		protected void onPostExecute(Void result) {
-			Log.d("","posted");
-			ListVoiceTask lvt = new ListVoiceTask();
-			lvt.execute();
+		protected void onPostExecute(Voice v) {
+			List<Voice> vl = va.getVoiceList();
+			vl.add(v);
+			listAdapter.notifyDataSetChanged();
 		}
 
 	}
